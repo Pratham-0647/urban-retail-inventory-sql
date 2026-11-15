@@ -1,0 +1,199 @@
+psql:sql/05_performance_optimization.sql:16: NOTICE:  index "idx_inv_store_product_date" does not exist, skipping
+Time: 0.191 ms
+psql:sql/05_performance_optimization.sql:17: NOTICE:  index "idx_inv_product_date" does not exist, skipping
+Time: 0.070 ms
+psql:sql/05_performance_optimization.sql:18: NOTICE:  index "idx_inv_low_stock" does not exist, skipping
+Time: 0.044 ms
+psql:sql/05_performance_optimization.sql:19: NOTICE:  materialized view "mv_monthly_kpis" does not exist, skipping
+Time: 0.044 ms
+Time: 91.055 ms
+                                          QUERY PLAN                                          
+----------------------------------------------------------------------------------------------
+ Sort (actual time=7.792..7.826 rows=730 loops=1)
+   Sort Key: date
+   Sort Method: quicksort  Memory: 53kB
+   Buffers: shared hit=913
+   ->  Seq Scan on inventory_daily (actual time=0.013..7.684 rows=730 loops=1)
+         Filter: (((store_id)::text = 'S003'::text) AND ((product_id)::text = 'P0057'::text))
+         Rows Removed by Filter: 108770
+         Buffers: shared hit=913
+ Planning:
+   Buffers: shared hit=40
+ Planning Time: 0.197 ms
+ Execution Time: 7.884 ms
+(12 rows)
+
+Time: 8.780 ms
+                                                          QUERY PLAN                                                          
+------------------------------------------------------------------------------------------------------------------------------
+ HashAggregate (actual time=0.821..0.822 rows=5 loops=1)
+   Group Key: store_id
+   Batches: 1  Memory Usage: 24kB
+   Buffers: shared hit=170
+   ->  Index Scan using inventory_daily_pkey on inventory_daily (actual time=0.011..0.736 rows=460 loops=1)
+         Index Cond: ((date >= '2023-10-01'::date) AND (date <= '2023-12-31'::date) AND ((product_id)::text = 'P0057'::text))
+         Buffers: shared hit=170
+ Planning:
+   Buffers: shared hit=13
+ Planning Time: 0.100 ms
+ Execution Time: 0.860 ms
+(11 rows)
+
+Time: 1.293 ms
+                                       QUERY PLAN                                        
+-----------------------------------------------------------------------------------------
+ Unique (actual time=172.242..195.941 rows=150 loops=1)
+   Buffers: shared hit=913, temp read=403 written=404
+   ->  Sort (actual time=172.240..186.864 rows=109500 loops=1)
+         Sort Key: store_id, product_id, date DESC
+         Sort Method: external merge  Disk: 3224kB
+         Buffers: shared hit=913, temp read=403 written=404
+         ->  Seq Scan on inventory_daily (actual time=0.005..13.818 rows=109500 loops=1)
+               Buffers: shared hit=913
+ Planning:
+   Buffers: shared hit=5
+ Planning Time: 0.042 ms
+ Execution Time: 196.281 ms
+(12 rows)
+
+Time: 196.589 ms
+Time: 197.417 ms
+Time: 118.719 ms
+Time: 16.067 ms
+Time: 86.629 ms
+                                               QUERY PLAN                                                
+---------------------------------------------------------------------------------------------------------
+ Sort (actual time=0.936..0.971 rows=730 loops=1)
+   Sort Key: date
+   Sort Method: quicksort  Memory: 53kB
+   Buffers: shared hit=730 read=6
+   ->  Bitmap Heap Scan on inventory_daily (actual time=0.227..0.858 rows=730 loops=1)
+         Recheck Cond: (((store_id)::text = 'S003'::text) AND ((product_id)::text = 'P0057'::text))
+         Heap Blocks: exact=730
+         Buffers: shared hit=730 read=6
+         ->  Bitmap Index Scan on idx_inv_store_product_date (actual time=0.141..0.141 rows=730 loops=1)
+               Index Cond: (((store_id)::text = 'S003'::text) AND ((product_id)::text = 'P0057'::text))
+               Buffers: shared read=6
+ Planning:
+   Buffers: shared hit=31 read=3
+ Planning Time: 0.211 ms
+ Execution Time: 1.023 ms
+(15 rows)
+
+Time: 1.557 ms
+                                                             QUERY PLAN                                                             
+------------------------------------------------------------------------------------------------------------------------------------
+ HashAggregate (actual time=0.288..0.289 rows=5 loops=1)
+   Group Key: store_id
+   Batches: 1  Memory Usage: 24kB
+   Buffers: shared hit=116 read=5
+   ->  Bitmap Heap Scan on inventory_daily (actual time=0.081..0.208 rows=460 loops=1)
+         Recheck Cond: (((product_id)::text = 'P0057'::text) AND (date >= '2023-10-01'::date) AND (date <= '2023-12-31'::date))
+         Heap Blocks: exact=116
+         Buffers: shared hit=116 read=5
+         ->  Bitmap Index Scan on idx_inv_product_date (actual time=0.068..0.068 rows=460 loops=1)
+               Index Cond: (((product_id)::text = 'P0057'::text) AND (date >= '2023-10-01'::date) AND (date <= '2023-12-31'::date))
+               Buffers: shared read=5
+ Planning:
+   Buffers: shared hit=7
+ Planning Time: 0.111 ms
+ Execution Time: 0.309 ms
+(15 rows)
+
+Time: 0.674 ms
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Result (actual time=0.030..48.792 rows=150 loops=1)
+   Buffers: shared hit=109505 read=537
+   ->  Unique (actual time=0.029..48.741 rows=150 loops=1)
+         Buffers: shared hit=109505 read=537
+         ->  Index Only Scan using idx_inv_store_product_date on inventory_daily (actual time=0.028..39.977 rows=109500 loops=1)
+               Heap Fetches: 109500
+               Buffers: shared hit=109505 read=537
+ Planning Time: 0.040 ms
+ Execution Time: 48.825 ms
+(9 rows)
+
+Time: 49.138 ms
+                                        QUERY PLAN                                        
+------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on inventory_daily (actual time=0.046..0.107 rows=282 loops=1)
+   Recheck Cond: ((date >= '2023-12-01'::date) AND (units_sold >= inventory_level))
+   Heap Blocks: exact=40
+   Buffers: shared hit=40 read=3
+   ->  Bitmap Index Scan on idx_inv_low_stock (actual time=0.037..0.037 rows=282 loops=1)
+         Index Cond: (date >= '2023-12-01'::date)
+         Buffers: shared read=3
+ Planning Time: 0.075 ms
+ Execution Time: 0.130 ms
+(9 rows)
+
+Time: 0.385 ms
+         index_name         |  size   
+----------------------------+---------
+ idx_inv_product_date       | 4368 kB
+ idx_inv_store_product_date | 4360 kB
+ inventory_daily_pkey       | 3280 kB
+ idx_inv_low_stock          | 208 kB
+(4 rows)
+
+Time: 1.710 ms
+Time: 307.085 ms
+Time: 4.543 ms
+                                                                                 QUERY PLAN                                                                                 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ HashAggregate (actual time=221.906..221.929 rows=24 loops=1)
+   Group Key: date_trunc('month'::text, (i.date)::timestamp with time zone)
+   Batches: 1  Memory Usage: 49kB
+   ->  Hash Join (actual time=37.044..204.194 rows=109500 loops=1)
+         Hash Cond: (i.weather_id = w.weather_id)
+         ->  Hash Join (actual time=37.020..171.160 rows=109500 loops=1)
+               Hash Cond: (i.region_id = rg.region_id)
+               ->  Hash Join (actual time=37.011..154.816 rows=109500 loops=1)
+                     Hash Cond: (pr.category_id = c.category_id)
+                     ->  Hash Join (actual time=37.002..137.808 rows=109500 loops=1)
+                           Hash Cond: ((i.product_id)::text = (pr.product_id)::text)
+                           ->  Hash Join (actual time=36.988..119.752 rows=109500 loops=1)
+                                 Hash Cond: (cal.season_id = se.season_id)
+                                 ->  Hash Join (actual time=36.934..103.082 rows=109500 loops=1)
+                                       Hash Cond: (i.date = cal.date)
+                                       ->  Hash Join (actual time=36.715..85.388 rows=109500 loops=1)
+                                             Hash Cond: ((i.date = p.date) AND ((i.store_id)::text = (p.store_id)::text) AND ((i.product_id)::text = (p.product_id)::text))
+                                             ->  Seq Scan on inventory_daily i (actual time=0.005..9.400 rows=109500 loops=1)
+                                             ->  Hash (actual time=36.443..36.444 rows=109500 loops=1)
+                                                   Buckets: 131072 (originally 65536)  Batches: 1 (originally 1)  Memory Usage: 6050kB
+                                                   ->  Seq Scan on pricing_daily p (actual time=0.009..13.156 rows=109500 loops=1)
+                                       ->  Hash (actual time=0.213..0.213 rows=730 loops=1)
+                                             Buckets: 1024  Batches: 1  Memory Usage: 36kB
+                                             ->  Seq Scan on calendar cal (actual time=0.006..0.108 rows=730 loops=1)
+                                 ->  Hash (actual time=0.049..0.050 rows=4 loops=1)
+                                       Buckets: 2048  Batches: 1  Memory Usage: 17kB
+                                       ->  Seq Scan on seasons se (actual time=0.048..0.048 rows=4 loops=1)
+                           ->  Hash (actual time=0.009..0.010 rows=30 loops=1)
+                                 Buckets: 2048  Batches: 1  Memory Usage: 18kB
+                                 ->  Seq Scan on products pr (actual time=0.003..0.005 rows=30 loops=1)
+                     ->  Hash (actual time=0.004..0.005 rows=5 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           ->  Seq Scan on categories c (actual time=0.002..0.003 rows=5 loops=1)
+               ->  Hash (actual time=0.004..0.005 rows=4 loops=1)
+                     Buckets: 2048  Batches: 1  Memory Usage: 17kB
+                     ->  Seq Scan on regions rg (actual time=0.003..0.003 rows=4 loops=1)
+         ->  Hash (actual time=0.013..0.013 rows=4 loops=1)
+               Buckets: 2048  Batches: 1  Memory Usage: 17kB
+               ->  Seq Scan on weather_conditions w (actual time=0.008..0.009 rows=4 loops=1)
+ Planning Time: 4.230 ms
+ Execution Time: 222.088 ms
+(41 rows)
+
+Time: 227.204 ms
+                                  QUERY PLAN                                   
+-------------------------------------------------------------------------------
+ HashAggregate (actual time=0.146..0.158 rows=24 loops=1)
+   Group Key: month
+   Batches: 1  Memory Usage: 40kB
+   ->  Seq Scan on mv_monthly_kpis (actual time=0.004..0.054 rows=600 loops=1)
+ Planning Time: 0.202 ms
+ Execution Time: 0.182 ms
+(6 rows)
+
+Time: 0.804 ms

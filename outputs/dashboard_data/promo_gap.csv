@@ -1,0 +1,6 @@
+category,demand_lift_pct,stock_lift_pct,stockout_promo_pct,stockout_normal_pct
+Clothing,20.5,14.4,6.27,5.68
+Electronics,21.0,14.0,6.21,5.02
+Furniture,20.4,13.2,6.77,5.59
+Groceries,18.0,11.9,6.81,5.66
+Toys,20.2,12.8,6.43,5.43

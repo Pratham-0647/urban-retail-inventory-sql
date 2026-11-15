@@ -1,0 +1,15 @@
+psql:sql/02_schema_normalized.sql:22: NOTICE:  schema "retail" does not exist, skipping
+       tbl       |  rows  
+-----------------+--------
+ calendar        |    730
+ products        |     30
+ stores          |      5
+ pricing_daily   | 109500
+ inventory_daily | 109500
+(5 rows)
+
+ raw_units_sold | model_units_sold 
+----------------+------------------
+       10591317 |         10591317
+(1 row)
+

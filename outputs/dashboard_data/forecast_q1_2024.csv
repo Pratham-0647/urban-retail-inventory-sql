@@ -1,0 +1,16 @@
+category,month,forecast_month,daily_units_2023,yoy_growth_pct,forecast_daily_units,forecast_month_units
+Clothing,1,January 2024,7229,2.3,7396,229278
+Clothing,2,February 2024,7259,2.3,7427,215382
+Clothing,3,March 2024,5213,2.3,5334,165352
+Electronics,1,January 2024,3593,2.3,3674,113904
+Electronics,2,February 2024,3533,2.3,3613,104764
+Electronics,3,March 2024,3529,2.3,3609,111890
+Furniture,1,January 2024,2764,1.2,2798,86731
+Furniture,2,February 2024,2725,1.2,2758,79971
+Furniture,3,March 2024,2840,1.2,2874,89097
+Groceries,1,January 2024,932,2.3,953,29548
+Groceries,2,February 2024,943,2.3,964,27970
+Groceries,3,March 2024,952,2.3,974,30198
+Toys,1,January 2024,1415,2.4,1448,44903
+Toys,2,February 2024,1411,2.4,1445,41907
+Toys,3,March 2024,1422,2.4,1456,45142

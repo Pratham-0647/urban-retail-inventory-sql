@@ -1,0 +1,6 @@
+psql:sql/00_load_raw.sql:12: NOTICE:  schema "staging" does not exist, skipping
+ total_rows | stores | products | first_day  |  last_day  
+------------+--------+----------+------------+------------
+     109500 |      5 |       30 | 2022-01-01 | 2023-12-31
+(1 row)
+

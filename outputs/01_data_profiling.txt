@@ -1,0 +1,70 @@
+ max_rows_per_key 
+------------------
+                1
+(1 row)
+
+ negative_rows | non_positive_price 
+---------------+--------------------
+             0 |                  0
+(1 row)
+
+ max_categories_per_product 
+----------------------------
+                          1
+(1 row)
+
+ store_id | region | days 
+----------+--------+------
+ S001     | East   | 5597
+ S001     | North  | 5529
+ S001     | South  | 5364
+ S001     | West   | 5410
+ S002     | East   | 5489
+ S002     | North  | 5446
+ S002     | South  | 5463
+ S002     | West   | 5502
+ S003     | East   | 5477
+ S003     | North  | 5366
+ S003     | South  | 5494
+ S003     | West   | 5563
+ S004     | East   | 5515
+ S004     | North  | 5451
+ S004     | South  | 5463
+ S004     | West   | 5471
+ S005     | East   | 5481
+ S005     | North  | 5501
+ S005     | South  | 5434
+ S005     | West   | 5484
+(20 rows)
+
+ month | seasonality | rows 
+-------+-------------+------
+     1 | Winter      | 9300
+     2 | Winter      | 8400
+     3 | Spring      | 9300
+     4 | Spring      | 9000
+     5 | Summer      | 9300
+     6 | Summer      | 9000
+     7 | Summer      | 9300
+     8 | Autumn      | 9300
+     9 | Autumn      | 9000
+    10 | Autumn      | 9300
+    11 | Winter      | 9000
+    12 | Winter      | 9300
+(12 rows)
+
+ pct_rows_matching_flow 
+------------------------
+                   0.60
+(1 row)
+
+ pct_sold_gt_stock | pct_sold_ge_stock | pct_forecast_gt_stock 
+-------------------+-------------------+-----------------------
+              5.06 |              5.60 |                 14.86
+(1 row)
+
+ min_inv | max_inv | avg_inv | min_sold | max_sold | avg_sold | min_price | max_price | min_disc | max_disc 
+---------+---------+---------+----------+----------+----------+-----------+-----------+----------+----------
+      20 |     443 |   145.7 |        0 |      342 |     96.7 |     10.00 |    100.00 |        0 |       20
+(1 row)
+

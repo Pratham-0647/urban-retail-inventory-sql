@@ -1,0 +1,326 @@
+psql:sql/04_analytical_insights.sql:25: NOTICE:  view "v_abc" does not exist, skipping
+ product_id |  category   | revenue  | cum_revenue_pct | abc_class 
+------------+-------------+----------+-----------------+-----------
+ P0066      | Clothing    | 19904598 |             3.7 | A
+ P0061      | Clothing    | 19798014 |             7.4 | A
+ P0133      | Clothing    | 19783630 |            11.0 | A
+ P0046      | Clothing    | 19708606 |            14.7 | A
+ P0178      | Clothing    | 19643502 |            18.3 | A
+ P0057      | Clothing    | 19623997 |            22.0 | A
+ P0125      | Clothing    | 19511996 |            25.6 | A
+ P0187      | Clothing    | 19509649 |            29.2 | A
+ P0069      | Clothing    | 19398523 |            32.8 | A
+ P0126      | Clothing    | 19204859 |            36.4 | A
+ P0016      | Clothing    | 19173879 |            39.9 | A
+ P0166      | Groceries   | 18795121 |            43.4 | A
+ P0094      | Groceries   | 18533450 |            46.8 | A
+ P0067      | Furniture   | 17502620 |            50.1 | A
+ P0153      | Furniture   | 17417926 |            53.3 | A
+ P0096      | Toys        | 17337248 |            56.5 | A
+ P0079      | Furniture   | 17337173 |            59.7 | A
+ P0083      | Toys        | 17326484 |            62.9 | A
+ P0149      | Furniture   | 17304323 |            66.1 | A
+ P0116      | Furniture   | 17211387 |            69.3 | A
+ P0129      | Furniture   | 17208747 |            72.5 | B
+ P0017      | Toys        | 17075145 |            75.7 | B
+ P0171      | Electronics | 16730317 |            78.8 | B
+ P0183      | Electronics | 16549963 |            81.9 | B
+ P0085      | Electronics | 16435418 |            84.9 | B
+ P0031      | Electronics | 16384614 |            87.9 | B
+ P0175      | Electronics | 16334479 |            91.0 | C
+ P0070      | Electronics | 16279483 |            94.0 | C
+ P0068      | Electronics | 16261161 |            97.0 | C
+ P0159      | Electronics | 16156001 |           100.0 | C
+(30 rows)
+
+ abc_class | products |  revenue  
+-----------+----------+-----------
+ A         |       20 | 374026985
+ B         |        6 | 100384204
+ C         |        4 |  65031124
+(3 rows)
+
+psql:sql/04_analytical_insights.sql:57: NOTICE:  view "v_velocity" does not exist, skipping
+   grp   | store_id | product_id | avg_daily_units | demand_cv | days_of_supply | velocity | xyz_class 
+---------+----------+------------+-----------------+-----------+----------------+----------+-----------
+ Fastest | S005     | P0061      |           108.7 |     0.381 |           1.45 | Fast     | Y
+ Fastest | S002     | P0016      |           108.1 |     0.391 |           1.46 | Fast     | Y
+ Fastest | S003     | P0069      |           107.7 |     0.391 |           1.46 | Fast     | Y
+ Fastest | S004     | P0133      |           107.5 |     0.376 |           1.46 | Fast     | Y
+ Fastest | S003     | P0125      |           107.2 |     0.395 |           1.48 | Fast     | Y
+ Fastest | S004     | P0016      |           107.1 |     0.392 |           1.47 | Fast     | Y
+ Fastest | S001     | P0057      |           107.0 |     0.394 |           1.48 | Fast     | Y
+ Fastest | S005     | P0178      |           107.0 |     0.387 |           1.45 | Fast     | Y
+ Fastest | S003     | P0046      |           106.8 |     0.387 |           1.46 | Fast     | Y
+ Fastest | S004     | P0057      |           106.5 |     0.379 |           1.46 | Fast     | Y
+ Slowest | S002     | P0068      |            86.0 |     0.367 |           1.56 | Slow     | Y
+ Slowest | S001     | P0068      |            86.1 |     0.375 |           1.55 | Slow     | Y
+ Slowest | S005     | P0159      |            86.4 |     0.367 |           1.56 | Slow     | Y
+ Slowest | S001     | P0085      |            86.6 |     0.389 |           1.56 | Slow     | Y
+ Slowest | S003     | P0068      |            86.8 |     0.375 |           1.55 | Slow     | Y
+ Slowest | S001     | P0070      |            86.8 |     0.361 |           1.56 | Slow     | Y
+ Slowest | S003     | P0031      |            86.9 |     0.373 |           1.55 | Slow     | Y
+ Slowest | S005     | P0068      |            87.3 |     0.380 |           1.56 | Slow     | Y
+ Slowest | S003     | P0070      |            87.4 |     0.370 |           1.59 | Slow     | Y
+ Slowest | S002     | P0175      |            87.6 |     0.373 |           1.54 | Slow     | Y
+(20 rows)
+
+  category   | velocity | store_products 
+-------------+----------+----------------
+ Clothing    | Fast     |             50
+ Clothing    | Medium   |              5
+ Electronics | Slow     |             40
+ Furniture   | Medium   |             22
+ Furniture   | Slow     |              8
+ Groceries   | Medium   |             10
+ Toys        | Medium   |             13
+ Toys        | Slow     |              2
+(8 rows)
+
+ abc_class | xyz_class | products 
+-----------+-----------+----------
+ A         | Y         |       20
+ B         | Y         |        6
+ C         | Y         |        4
+(3 rows)
+
+psql:sql/04_analytical_insights.sql:105: NOTICE:  view "v_overstock" does not exist, skipping
+ store_id | product_id |  category   | pct_days_overstocked | avg_excess_units | annual_holding_cost_of_excess 
+----------+------------+-------------+----------------------+------------------+-------------------------------
+ S003     | P0070      | Electronics |                 19.5 |              7.2 |                            97
+ S004     | P0183      | Electronics |                 23.6 |              6.1 |                            96
+ S002     | P0126      | Clothing    |                 15.1 |              5.9 |                            92
+ S005     | P0069      | Clothing    |                 16.4 |              5.9 |                            89
+ S001     | P0125      | Clothing    |                 18.4 |              6.4 |                            85
+ S003     | P0031      | Electronics |                 20.3 |              6.1 |                            84
+ S002     | P0178      | Clothing    |                 13.4 |              5.8 |                            83
+ S001     | P0057      | Clothing    |                 16.2 |              5.2 |                            82
+ S004     | P0085      | Electronics |                 17.3 |              5.7 |                            79
+ S001     | P0085      | Electronics |                 22.7 |              5.3 |                            79
+(10 rows)
+
+  category   | pct_days_overstocked | excess_units_on_hand | annual_holding_cost_of_excess 
+-------------+----------------------+----------------------+-------------------------------
+ Clothing    |                 13.5 |                  248 |                          3428
+ Electronics |                 18.4 |                  190 |                          2612
+ Furniture   |                 15.8 |                  121 |                          1634
+ Toys        |                 15.5 |                   58 |                           786
+ Groceries   |                 14.4 |                   43 |                           614
+(5 rows)
+
+ total_excess_units | total_annual_holding_cost_of_excess 
+--------------------+-------------------------------------
+                660 |                                9074
+(1 row)
+
+psql:sql/04_analytical_insights.sql:151: NOTICE:  view "v_lost_sales" does not exist, skipping
+ year |  category   | est_lost_units | est_lost_revenue 
+------+-------------+----------------+------------------
+ 2022 | Clothing    |          18441 |           950153
+ 2022 | Electronics |           9586 |           477252
+ 2022 | Furniture   |           7958 |           409426
+ 2022 | Toys        |           4457 |           217975
+ 2022 | Groceries   |           2866 |           142624
+ 2023 | Clothing    |          17682 |           877234
+ 2023 | Electronics |           9804 |           496394
+ 2023 | Furniture   |           8052 |           406099
+ 2023 | Toys        |           4211 |           213519
+ 2023 | Groceries   |           3175 |           152443
+(10 rows)
+
+ est_lost_revenue_2023 | pct_of_actual_revenue 
+-----------------------+-----------------------
+               2145689 |                  0.79
+(1 row)
+
+ season | holiday_promotion | stockout_rate_pct | avg_units_sold | avg_stock 
+--------+-------------------+-------------------+----------------+-----------
+ Winter | t                 |              6.99 |          123.1 |     172.6
+ Spring | t                 |              6.31 |          107.8 |     156.8
+ Summer | t                 |              6.26 |          109.8 |     158.9
+ Winter | f                 |              6.15 |          102.0 |     150.8
+ Autumn | t                 |              5.85 |          106.7 |     156.4
+ Spring | f                 |              5.33 |           89.2 |     138.1
+ Summer | f                 |              5.16 |           90.9 |     140.0
+ Autumn | f                 |              4.95 |           89.2 |     138.2
+(8 rows)
+
+  category   | season | avg_daily_units | seasonal_index 
+-------------+--------+-----------------+----------------
+ Clothing    | Winter |           130.3 |           1.27
+ Clothing    | Summer |            93.2 |           0.91
+ Clothing    | Autumn |            92.9 |           0.91
+ Clothing    | Spring |            93.5 |           0.91
+ Electronics | Winter |            88.0 |           1.00
+ Electronics | Autumn |            88.4 |           1.00
+ Electronics | Spring |            88.3 |           1.00
+ Electronics | Summer |            88.4 |           1.00
+ Furniture   | Summer |            93.1 |           1.00
+ Furniture   | Autumn |            93.1 |           1.00
+ Furniture   | Spring |            93.2 |           1.00
+ Furniture   | Winter |            92.6 |           1.00
+ Groceries   | Summer |           120.6 |           1.21
+ Groceries   | Autumn |            93.5 |           0.94
+ Groceries   | Spring |            93.0 |           0.93
+ Groceries   | Winter |            92.6 |           0.93
+ Toys        | Winter |            92.9 |           1.00
+ Toys        | Autumn |            93.3 |           1.00
+ Toys        | Spring |            93.2 |           1.00
+ Toys        | Summer |            92.7 |           1.00
+(20 rows)
+
+ month | month_name | year | units  | yoy_growth_pct 
+-------+------------+------+--------+----------------
+     1 | January    | 2022 | 485828 |               
+     1 | January    | 2023 | 493921 |            1.7
+     2 | February   | 2022 | 438095 |               
+     2 | February   | 2023 | 444383 |            1.4
+     3 | March      | 2022 | 422493 |               
+     3 | March      | 2023 | 432677 |            2.4
+     4 | April      | 2022 | 408005 |               
+     4 | April      | 2023 | 420022 |            2.9
+     5 | May        | 2022 | 429397 |               
+     5 | May        | 2023 | 441310 |            2.8
+     6 | June       | 2022 | 417131 |               
+     6 | June       | 2023 | 426763 |            2.3
+     7 | July       | 2022 | 430647 |               
+     7 | July       | 2023 | 440582 |            2.3
+     8 | August     | 2022 | 419919 |               
+     8 | August     | 2023 | 430983 |            2.6
+     9 | September  | 2022 | 413199 |               
+     9 | September  | 2023 | 418554 |            1.3
+    10 | October    | 2022 | 421619 |               
+    10 | October    | 2023 | 430344 |            2.1
+    11 | November   | 2022 | 469706 |               
+    11 | November   | 2023 | 478628 |            1.9
+    12 | December   | 2022 | 484799 |               
+    12 | December   | 2023 | 492312 |            1.5
+(24 rows)
+
+ year |  units  | net_revenue 
+------+---------+-------------
+ 2022 | 5240838 |   267347007
+ 2023 | 5350479 |   272095306
+(2 rows)
+
+ is_weekend | avg_daily_units 
+------------+-----------------
+ f          |            96.7
+ t          |            96.8
+(2 rows)
+
+  category   | units_promo | units_normal | demand_lift_pct | stock_lift_pct 
+-------------+-------------+--------------+-----------------+----------------
+ Electronics |       103.6 |         85.6 |            21.0 |           14.0
+ Clothing    |       123.2 |        102.2 |            20.5 |           14.4
+ Furniture   |       108.6 |         90.2 |            20.4 |           13.2
+ Toys        |       108.5 |         90.2 |            20.2 |           12.8
+ Groceries   |       114.8 |         97.3 |            18.0 |           11.9
+(5 rows)
+
+ discount_pct | sku_days | avg_units_sold | revenue_given_away 
+--------------+----------+----------------+--------------------
+            0 |    32897 |           96.7 |                  0
+            5 |    21880 |           96.5 |            5803371
+           10 |    32544 |           96.9 |           17418391
+           15 |    11053 |           96.5 |            8806814
+           20 |    11126 |           96.9 |           11897588
+(5 rows)
+
+ total_discount_cost | pct_of_gross_revenue 
+---------------------+----------------------
+            43926163 |                 7.53
+(1 row)
+
+ weather | avg_units_sold | vs_overall_pct 
+---------+----------------+----------------
+ Sunny   |           98.2 |            1.6
+ Snowy   |           98.0 |            1.3
+ Cloudy  |           97.8 |            1.1
+ Rainy   |           92.9 |           -3.9
+(4 rows)
+
+ price_position | sku_days | avg_units_sold 
+----------------+----------+----------------
+ 1. >5% cheaper |    25810 |           96.9
+ 2. within ±5%  |    55081 |           96.7
+ 3. >5% dearer  |    28609 |           96.6
+(3 rows)
+
+  category   | mape_pct | bias_pct 
+-------------+----------+----------
+ Clothing    |     15.8 |     11.6
+ Electronics |     15.9 |     11.7
+ Furniture   |     15.7 |     11.6
+ Groceries   |     15.7 |     11.6
+ Toys        |     15.8 |     11.8
+             |     15.8 |     11.7
+(6 rows)
+
+ season | holiday_promotion | bias_pct 
+--------+-------------------+----------
+ Autumn | f                 |     11.7
+ Autumn | t                 |     11.8
+ Spring | f                 |     11.6
+ Spring | t                 |     11.6
+ Summer | f                 |     11.8
+ Summer | t                 |     11.6
+ Winter | f                 |     11.6
+ Winter | t                 |     11.6
+(8 rows)
+
+psql:sql/04_analytical_insights.sql:303: NOTICE:  view "v_replenishment" does not exist, skipping
+ product_id |  category   | order_to_sales_ratio | order_gap_cv | under_order_pct | stockout_pct | reliability_score | worst_rank 
+------------+-------------+----------------------+--------------+-----------------+--------------+-------------------+------------
+ P0149      | Furniture   |                0.991 |        0.122 |            50.8 |         6.25 |              74.3 |          1
+ P0046      | Clothing    |                0.993 |        0.122 |            50.5 |         6.22 |              74.4 |          2
+ P0178      | Clothing    |                0.998 |        0.124 |            49.1 |         6.44 |              74.5 |          3
+ P0153      | Furniture   |                0.994 |        0.124 |            49.4 |         6.38 |              74.5 |          3
+ P0066      | Clothing    |                0.994 |        0.124 |            50.9 |         5.78 |              74.5 |          3
+ P0126      | Clothing    |                0.995 |        0.125 |            50.2 |         5.95 |              74.6 |          6
+ P0068      | Electronics |                0.995 |        0.124 |            50.3 |         5.86 |              74.7 |          7
+ P0067      | Furniture   |                0.995 |        0.124 |            50.0 |         5.97 |              74.7 |          7
+ P0175      | Electronics |                0.994 |        0.123 |            50.4 |         5.78 |              74.7 |          7
+ P0094      | Groceries   |                0.994 |        0.124 |            50.2 |         5.81 |              74.8 |         10
+ P0166      | Groceries   |                0.996 |        0.123 |            49.8 |         5.86 |              74.8 |         10
+ P0017      | Toys        |                1.000 |        0.123 |            48.9 |         6.00 |              75.0 |         12
+ P0069      | Clothing    |                0.997 |        0.124 |            49.8 |         5.62 |              75.0 |         12
+ P0083      | Toys        |                0.996 |        0.122 |            49.5 |         5.78 |              75.1 |         14
+ P0159      | Electronics |                0.990 |        0.125 |            51.0 |         5.04 |              75.2 |         15
+ P0129      | Furniture   |                0.995 |        0.124 |            49.9 |         5.40 |              75.2 |         15
+ P0016      | Clothing    |                0.996 |        0.124 |            49.4 |         5.56 |              75.2 |         15
+ P0057      | Clothing    |                0.999 |        0.125 |            47.9 |         5.95 |              75.3 |         18
+ P0116      | Furniture   |                0.996 |        0.124 |            48.7 |         5.70 |              75.3 |         18
+ P0061      | Clothing    |                0.998 |        0.125 |            48.5 |         5.73 |              75.3 |         18
+ P0171      | Electronics |                0.992 |        0.123 |            50.1 |         5.12 |              75.4 |         21
+ P0096      | Toys        |                0.992 |        0.122 |            50.6 |         4.96 |              75.5 |         22
+ P0085      | Electronics |                0.994 |        0.123 |            49.5 |         5.26 |              75.5 |         22
+ P0133      | Clothing    |                0.997 |        0.124 |            49.0 |         5.42 |              75.5 |         22
+ P0070      | Electronics |                0.993 |        0.124 |            49.4 |         5.10 |              75.6 |         25
+ P0031      | Electronics |                0.994 |        0.124 |            50.1 |         4.79 |              75.7 |         26
+ P0187      | Clothing    |                1.001 |        0.124 |            48.1 |         5.45 |              75.7 |         26
+ P0125      | Clothing    |                1.000 |        0.124 |            48.0 |         5.37 |              75.8 |         28
+ P0079      | Furniture   |                0.998 |        0.122 |            49.3 |         4.90 |              75.9 |         29
+ P0183      | Electronics |                0.999 |        0.123 |            48.5 |         4.63 |              76.3 |         30
+(30 rows)
+
+psql:sql/04_analytical_insights.sql:336: NOTICE:  view "v_forecast_q1_2024" does not exist, skipping
+  category   | month | forecast_month | daily_units_2023 | yoy_growth_pct | forecast_daily_units | forecast_month_units 
+-------------+-------+----------------+------------------+----------------+----------------------+----------------------
+ Clothing    |     1 | January 2024   |             7229 |            2.3 |                 7396 |               229278
+ Clothing    |     2 | February 2024  |             7259 |            2.3 |                 7427 |               215382
+ Clothing    |     3 | March 2024     |             5213 |            2.3 |                 5334 |               165352
+ Electronics |     1 | January 2024   |             3593 |            2.3 |                 3674 |               113904
+ Electronics |     2 | February 2024  |             3533 |            2.3 |                 3613 |               104764
+ Electronics |     3 | March 2024     |             3529 |            2.3 |                 3609 |               111890
+ Furniture   |     1 | January 2024   |             2764 |            1.2 |                 2798 |                86731
+ Furniture   |     2 | February 2024  |             2725 |            1.2 |                 2758 |                79971
+ Furniture   |     3 | March 2024     |             2840 |            1.2 |                 2874 |                89097
+ Groceries   |     1 | January 2024   |              932 |            2.3 |                  953 |                29548
+ Groceries   |     2 | February 2024  |              943 |            2.3 |                  964 |                27970
+ Groceries   |     3 | March 2024     |              952 |            2.3 |                  974 |                30198
+ Toys        |     1 | January 2024   |             1415 |            2.4 |                 1448 |                44903
+ Toys        |     2 | February 2024  |             1411 |            2.4 |                 1445 |                41907
+ Toys        |     3 | March 2024     |             1422 |            2.4 |                 1456 |                45142
+(15 rows)
+

@@ -1,0 +1,77 @@
+digraph ERD {
+  graph [rankdir=LR, fontname="Helvetica", bgcolor="white", pad=0.4, nodesep=0.5, ranksep=1.1,
+         label="Urban Retail Co. — Normalized Inventory Schema (PostgreSQL, schema: retail)", labelloc=t, fontsize=18];
+  node  [shape=plaintext, fontname="Helvetica", fontsize=11];
+  edge  [color="#555555", arrowhead=crow, arrowtail=tee, dir=both, penwidth=1.2];
+
+  regions [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
+    <TR><TD BGCOLOR="#E8EEF7"><B>regions</B></TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="pk">PK  region_id  SMALLINT</TD></TR>
+    <TR><TD ALIGN="LEFT">region_name  VARCHAR(10) UQ</TD></TR></TABLE>>];
+
+  weather [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
+    <TR><TD BGCOLOR="#E8EEF7"><B>weather_conditions</B></TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="pk">PK  weather_id  SMALLINT</TD></TR>
+    <TR><TD ALIGN="LEFT">weather_name  VARCHAR(15) UQ</TD></TR></TABLE>>];
+
+  categories [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
+    <TR><TD BGCOLOR="#E8EEF7"><B>categories</B></TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="pk">PK  category_id  SMALLINT</TD></TR>
+    <TR><TD ALIGN="LEFT">category_name  VARCHAR(30) UQ</TD></TR></TABLE>>];
+
+  seasons [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
+    <TR><TD BGCOLOR="#E8EEF7"><B>seasons</B></TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="pk">PK  season_id  SMALLINT</TD></TR>
+    <TR><TD ALIGN="LEFT">season_name  VARCHAR(10) UQ</TD></TR></TABLE>>];
+
+  products [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
+    <TR><TD BGCOLOR="#DCEBDD"><B>products</B></TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="pk">PK  product_id  VARCHAR(10)</TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="fk">FK  category_id  SMALLINT</TD></TR></TABLE>>];
+
+  stores [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
+    <TR><TD BGCOLOR="#DCEBDD"><B>stores</B></TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="pk">PK  store_id  VARCHAR(10)</TD></TR></TABLE>>];
+
+  calendar [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
+    <TR><TD BGCOLOR="#DCEBDD"><B>calendar</B></TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="pk">PK  date  DATE</TD></TR>
+    <TR><TD ALIGN="LEFT">year, quarter, month, month_name</TD></TR>
+    <TR><TD ALIGN="LEFT">week_of_year, day_of_week, is_weekend</TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="fk">FK  season_id  SMALLINT</TD></TR></TABLE>>];
+
+  inventory_daily [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
+    <TR><TD BGCOLOR="#FBE3C8"><B>inventory_daily</B>  (fact · 109,500 rows)</TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="date">PK,FK  date  DATE</TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="store">PK,FK  store_id  VARCHAR(10)</TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="product">PK,FK  product_id  VARCHAR(10)</TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="region">FK  region_id  SMALLINT</TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="weather">FK  weather_id  SMALLINT</TD></TR>
+    <TR><TD ALIGN="LEFT">inventory_level  INT</TD></TR>
+    <TR><TD ALIGN="LEFT">units_sold  INT</TD></TR>
+    <TR><TD ALIGN="LEFT">units_ordered  INT</TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="out">demand_forecast  NUMERIC(10,2)</TD></TR></TABLE>>];
+
+  pricing_daily [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
+    <TR><TD BGCOLOR="#FBE3C8"><B>pricing_daily</B>  (fact · 1:1)</TD></TR>
+    <TR><TD ALIGN="LEFT" PORT="pk">PK,FK  date, store_id, product_id</TD></TR>
+    <TR><TD ALIGN="LEFT">price  NUMERIC(10,2)</TD></TR>
+    <TR><TD ALIGN="LEFT">discount_pct  SMALLINT</TD></TR>
+    <TR><TD ALIGN="LEFT">competitor_price  NUMERIC(10,2)</TD></TR>
+    <TR><TD ALIGN="LEFT">holiday_promotion  BOOLEAN</TD></TR></TABLE>>];
+
+  params [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
+    <TR><TD BGCOLOR="#EEEEEE"><B>analysis_params</B>  (assumptions)</TD></TR>
+    <TR><TD ALIGN="LEFT">PK  param_name  VARCHAR(40)</TD></TR>
+    <TR><TD ALIGN="LEFT">param_value  NUMERIC</TD></TR>
+    <TR><TD ALIGN="LEFT">description  TEXT</TD></TR></TABLE>>];
+
+  categories:pk -> products:fk;
+  seasons:pk    -> calendar:fk;
+  calendar:pk   -> inventory_daily:date;
+  stores:pk     -> inventory_daily:store;
+  products:pk   -> inventory_daily:product;
+  regions:pk    -> inventory_daily:region;
+  weather:pk    -> inventory_daily:weather;
+  inventory_daily:out -> pricing_daily:pk [arrowhead=tee, label=" 1 : 1", fontsize=10];
+}
